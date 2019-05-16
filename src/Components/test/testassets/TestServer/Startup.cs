@@ -1,4 +1,5 @@
 using BasicTestApp;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,7 @@ namespace TestServer
                 options.AddPolicy("AllowAll", _ => { /* Controlled below */ });
             });
             services.AddServerSideBlazor();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,6 +51,7 @@ namespace TestServer
                     .AllowCredentials();
             });
 
+            app.UseAuthentication();
 
             // Mount the server-side Blazor app on /subdir
             app.Map("/subdir", subdirApp =>
@@ -69,6 +72,7 @@ namespace TestServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
 
             // Separately, mount a prerendered server-side Blazor app on /prerendered
